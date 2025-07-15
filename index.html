@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error Game</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#2196F3" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+
+    #game-container {
+      max-width: 90%;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
+
+    #timer {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    #phrase {
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+
+    #hint {
+      font-style: italic;
+      color: #ff9800;
+      margin-top: 10px;
+    }
+
+    #feedback {
+      font-weight: bold;
+      margin-top: 10px;
+      min-height: 1.5em;
+    }
+
+    #input {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1em;
+      margin: 5px 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    #validate-btn {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    #validate-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    #restart-btn, #start-btn {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5em;
+      }
+      #phrase {
+        font-size: 1.1em;
+      }
+      button {
+        width: 100%;
+        margin: 8px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1>Error Game</h1>
+    <div id="timer">Time: 60</div>
+    <div id="phrase">Click "Start" to begin!</div>
+    <div id="hint"></div>
+    <input type="text" id="input" placeholder="Type the corrected sentence..." disabled />
+    <br />
+    <button id="validate-btn" disabled>Valider</button>
+    <div id="feedback"></div>
+    <button id="start-btn">Start</button>
+    <button id="restart-btn" style="display: none;">New Game</button>
+  </div>
+
+  <script>
+   const phrases = [
+  { incorrect: "She go to school everyday.", correct: "She goes to school every day.", hint: "Add 's' to the verb" },
+  { incorrect: "He don't like pizza.", correct: "He doesn't like pizza.", hint: "Use 'doesn't' with he" },
+  { incorrect: "I can plays the guitar.", correct: "I can play the guitar.", hint: "No 's' after can" },
+  { incorrect: "They was late for the meeting.", correct: "They were late for the meeting.", hint: "'They' goes with 'were'" },
+  { incorrect: "There is too much people here.", correct: "There are too many people here.", hint: "'People' is plural" },
+  { incorrect: "He have a dog.", correct: "He has a dog.", hint: "Use 'has' with he" },
+  { incorrect: "It's cold, wear you're coat.", correct: "It's cold, wear your coat.", hint: "'Your' shows possession" },
+  { incorrect: "I am agree with you.", correct: "I agree with you.", hint: "No 'am' before agree" },
+  { incorrect: "She can sings well.", correct: "She can sing well.", hint: "No 's' after can" },
+  { incorrect: "He is married with a doctor.", correct: "He is married to a doctor.", hint: "Use 'married to'" },
+  { incorrect: "I succeeded to finish it.", correct: "I managed to finish it.", hint: "Use 'managed to'" },
+  { incorrect: "We was happy to see you.", correct: "We were happy to see you.", hint: "'We' goes with 'were'" },
+  { incorrect: "She don't know the answer.", correct: "She doesn't know the answer.", hint: "Use 'doesn't' with she" },
+  { incorrect: "I has no idea.", correct: "I have no idea.", hint: "Use 'have' with I" },
+  { incorrect: "He run fast yesterday.", correct: "He ran fast yesterday.", hint: "Past of run is ran" },
+  { incorrect: "I am boring in class.", correct: "I am bored in class.", hint: "'Bored' is for feelings" },
+  { incorrect: "The childs are playing.", correct: "The children are playing.", hint: "Plural of child is children" },
+  { incorrect: "She teached me.", correct: "She taught me.", hint: "Past of teach is taught" },
+  { incorrect: "He goed to the store.", correct: "He went to the store.", hint: "Past of go is went" },
+  { incorrect: "We was very tired.", correct: "We were very tired.", hint: "'We' goes with 'were'" },
+  { incorrect: "There is many cars.", correct: "There are many cars.", hint: "'Cars' is plural" },
+  { incorrect: "She don't like apples.", correct: "She doesn't like apples.", hint: "Use 'doesn't' with she" },
+  { incorrect: "I am interesting in music.", correct: "I am interested in music.", hint: "'Interested' for feelings" },
+  { incorrect: "He can to swim.", correct: "He can swim.", hint: "No 'to' after can" },
+  { incorrect: "We was late to the party.", correct: "We were late to the party.", hint: "'We' goes with 'were'" },
+  { incorrect: "She have a new car.", correct: "She has a new car.", hint: "Use 'has' with she" },
+  { incorrect: "It's very cold today, isn't it?", correct: "It's very cold today, isn't it?", hint: "Correct sentence" },
+  { incorrect: "I goed home early.", correct: "I went home early.", hint: "Past of go is went" },
+  { incorrect: "They doesn't understand.", correct: "They don't understand.", hint: "Use 'don't' with they" },
+  { incorrect: "I am live in Paris.", correct: "I live in Paris.", hint: "No 'am' before live" },
+  { incorrect: "He don't want to come.", correct: "He doesn't want to come.", hint: "Use 'doesn't' with he" },
+  { incorrect: "She can sings well.", correct: "She can sing well.", hint: "No 's' after can" },
+  { incorrect: "The book are on the table.", correct: "The book is on the table.", hint: "'Book' is singular" },
+  { incorrect: "They was playing football.", correct: "They were playing football.", hint: "'They' goes with 'were'" },
+  { incorrect: "I am agree with you.", correct: "I agree with you.", hint: "No 'am' before agree" },
+  { incorrect: "She don't like chocolate.", correct: "She doesn't like chocolate.", hint: "Use 'doesn't' with she" },
+  { incorrect: "We is friends.", correct: "We are friends.", hint: "'We' goes with 'are'" },
+  { incorrect: "He play football every Sunday.", correct: "He plays football every Sunday.", hint: "Add 's' to verb" },
+  { incorrect: "I am loving this song.", correct: "I love this song.", hint: "Use simple present" },
+  { incorrect: "They goes to school.", correct: "They go to school.", hint: "No 's' for they" },
+  { incorrect: "She were happy.", correct: "She was happy.", hint: "'She' goes with 'was'" },
+  { incorrect: "We has two cats.", correct: "We have two cats.", hint: "Use 'have' with we" },
+  { incorrect: "He don't know the answer.", correct: "He doesn't know the answer.", hint: "Use 'doesn't' with he" },
+  { incorrect: "It's raining, take you're umbrella.", correct: "It's raining, take your umbrella.", hint: "'Your' shows possession" },
+  { incorrect: "I have saw that movie.", correct: "I have seen that movie.", hint: "Past participle is 'seen'" },
+  { incorrect: "She will goes tomorrow.", correct: "She will go tomorrow.", hint: "'Will' + base verb" },
+  { incorrect: "He didn't went there.", correct: "He didn't go there.", hint: "'Did' + base verb" },
+  { incorrect: "We was at the park.", correct: "We were at the park.", hint: "'We' goes with 'were'" },
+  { incorrect: "They has finished.", correct: "They have finished.", hint: "Use 'have' with they" },
+  { incorrect: "I am very tired today.", correct: "I am very tired today.", hint: "Correct sentence" },
+  { incorrect: "She didn't went to school.", correct: "She didn't go to school.", hint: "'Did' + base verb" },
+  { incorrect: "He don't like coffee.", correct: "He doesn't like coffee.", hint: "Use 'doesn't' with he" },
+  { incorrect: "We has a meeting.", correct: "We have a meeting.", hint: "Use 'have' with we" },
+  { incorrect: "They is coming.", correct: "They are coming.", hint: "'They' goes with 'are'" },
+  { incorrect: "I has never been there.", correct: "I have never been there.", hint: "Use 'have' with I" },
+  { incorrect: "She can plays piano.", correct: "She can play piano.", hint: "No 's' after can" },
+  { incorrect: "He goed to bed.", correct: "He went to bed.", hint: "Past of go is went" },
+  { incorrect: "We was happy.", correct: "We were happy.", hint: "'We' goes with 'were'" },
+  { incorrect: "She don't know.", correct: "She doesn't know.", hint: "Use 'doesn't' with she" },
+  { incorrect: "They has a car.", correct: "They have a car.", hint: "Use 'have' with they" },
+  { incorrect: "I am studying English.", correct: "I am studying English.", hint: "Correct sentence" },
+  { incorrect: "He don't like apples.", correct: "He doesn't like apples.", hint: "Use 'doesn't' with he" },
+  { incorrect: "She were there.", correct: "She was there.", hint: "'She' goes with 'was'" },
+  { incorrect: "We is ready.", correct: "We are ready.", hint: "'We' goes with 'are'" },
+  { incorrect: "He has went home.", correct: "He has gone home.", hint: "Past participle is 'gone'" },
+  { incorrect: "I am knowing the answer.", correct: "I know the answer.", hint: "Use simple present" },
+  { incorrect: "They has three children.", correct: "They have three children.", hint: "Use 'have' with they" },
+  { incorrect: "She don't understand.", correct: "She doesn't understand.", hint: "Use 'doesn't' with she" },
+  { incorrect: "We was watching TV.", correct: "We were watching TV.", hint: "'We' goes with 'were'" },
+  { incorrect: "He don't want to go.", correct: "He doesn't want to go.", hint: "Use 'doesn't' with he" },
+  { incorrect: "They is playing.", correct: "They are playing.", hint: "'They' goes with 'are'" },
+  { incorrect: "I has a question.", correct: "I have a question.", hint: "Use 'have' with I" },
+  { incorrect: "She can sings well.", correct: "She can sing well.", hint: "No 's' after can" },
+  { incorrect: "He goed home.", correct: "He went home.", hint: "Past of go is went" },
+  { incorrect: "We was tired.", correct: "We were tired.", hint: "'We' goes with 'were'" },
+  { incorrect: "She don't like it.", correct: "She doesn't like it.", hint: "Use 'doesn't' with she" },
+  { incorrect: "They has arrived.", correct: "They have arrived.", hint: "Use 'have' with they" },
+  { incorrect: "I am seeing a movie.", correct: "I am watching a movie.", hint: "Use 'watch' with movies" },
+  { incorrect: "He don't speak French.", correct: "He doesn't speak French.", hint: "Use 'doesn't' with he" },
+  { incorrect: "We was happy.", correct: "We were happy.", hint: "'We' goes with 'were'" },
+  { incorrect: "She has wrote a letter.", correct: "She has written a letter.", hint: "Past participle is 'written'" },
+  { incorrect: "I am play soccer.", correct: "I play soccer.", hint: "No 'am' before play" },
+  { incorrect: "They doesn't know.", correct: "They don't know.", hint: "Use 'don't' with they" },
+  { incorrect: "He has ate.", correct: "He has eaten.", hint: "Past participle is 'eaten'" },
+  { incorrect: "She were sad.", correct: "She was sad.", hint: "'She' goes with 'was'" },
+  { incorrect: "We is going.", correct: "We are going.", hint: "'We' goes with 'are'" },
+  { incorrect: "He has did it.", correct: "He has done it.", hint: "Past participle is 'done'" },
+  { incorrect: "I am knowing the truth.", correct: "I know the truth.", hint: "Use simple present" },
+  { incorrect: "They has been here.", correct: "They have been here.", hint: "Use 'have' with they" },
+  { incorrect: "She don't want that.", correct: "She doesn't want that.", hint: "Use 'doesn't' with she" },
+  { incorrect: "We was late.", correct: "We were late.", hint: "'We' goes with 'were'" },
+  { incorrect: "He has saw it.", correct: "He has seen it.", hint: "Past participle is 'seen'" }
+];
+
+    let timer;
+    let timeLeft = 60;
+    let currentIndex = 0;
+    let score = 0;
+
+    const timerDisplay = document.getElementById("timer");
+    const phraseDisplay = document.getElementById("phrase");
+    const input = document.getElementById("input");
+    const feedback = document.getElementById("feedback");
+    const hint = document.getElementById("hint");
+    const validateBtn = document.getElementById("validate-btn");
+    const startBtn = document.getElementById("start-btn");
+    const restartBtn = document.getElementById("restart-btn");
+
+    function startGame() {
+      startBtn.style.display = "none";
+      restartBtn.style.display = "none";
+      input.disabled = false;
+      validateBtn.disabled = false;
+      input.value = "";
+      feedback.textContent = "";
+      hint.textContent = "";
+      currentIndex = 0;
+      score = 0;
+      timeLeft = 60;
+      timerDisplay.textContent = `Time: ${timeLeft}`;
+      showPhrase();
+
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Time: ${timeLeft}`;
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function showPhrase() {
+      const current = phrases[currentIndex];
+      phraseDisplay.textContent = current.incorrect;
+      hint.textContent = "";
+      input.value = "";
+      input.focus();
+    }
+
+    function validateAnswer() {
+      const userAnswer = input.value.trim();
+      const correctAnswer = phrases[currentIndex].correct;
+
+      if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+        feedback.textContent = "✅ Correct!";
+        score++;
+        currentIndex = (currentIndex + 1) % phrases.length;
+        setTimeout(() => {
+          feedback.textContent = "";
+          showPhrase();
+        }, 1000);
+      } else {
+        feedback.textContent = "❌ Try again!";
+        hint.textContent = "Hint: " + phrases[currentIndex].hint;
+      }
+    }
+
+    function endGame() {
+      clearInterval(timer);
+      input.disabled = true;
+      validateBtn.disabled = true;
+      phraseDisplay.textContent = `Game Over! You got ${score} correct.`;
+      restartBtn.style.display = "inline-block";
+    }
+
+    validateBtn.addEventListener("click", validateAnswer);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        validateAnswer();
+      }
+    });
+    startBtn.addEventListener("click", startGame);
+    restartBtn.addEventListener("click", startGame);
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log("✅ Service Worker enregistré", reg))
+          .catch(err => console.error("❌ Erreur SW :", err));
+      });
+    }
+  </script>
+</body>
+</html>
