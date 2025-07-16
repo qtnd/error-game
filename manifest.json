@@ -1,19 +1,19 @@
 {
-  "name": "Error Game",
-  "short_name": "ErrorGame",
-  "start_url": "./index.html",
+  "name": "Jeu de Phrases",
+  "short_name": "Phrases",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2196F3",
-  "orientation": "portrait",
+  "theme_color": "#4f46e5",
+  "description": "Un jeu pour réécrire des phrases correctement.",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
