@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Error Game</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#4f46e5" />
+<link rel="icon" href="icons/icon-192.png" />
 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#2196F3" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -291,6 +292,15 @@ function validateAnswer() {
 
     startBtn.addEventListener("click", startGame);
     restartBtn.addEventListener("click", startGame);
+
+  if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('✅ Service Worker enregistré', reg))
+      .catch(err => console.error('❌ Erreur Service Worker', err));
+  });
+}
+
   </script>
 </body>
 </html>
